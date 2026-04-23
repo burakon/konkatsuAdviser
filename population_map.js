@@ -263,7 +263,7 @@ const EDU_L = { highschool: '高卒以上', college: '短大高専専門卒以�
 // ══════════════════════════════════════════════════
 let editMode = false;
 const S = {
-    sex: 'all', ageMin: 20, ageMax: 60,
+    sex: 'male', ageMin: 20, ageMax: 60,
     marital: new Set(['single']),
     edu: 'all',
     occ: new Set(),
