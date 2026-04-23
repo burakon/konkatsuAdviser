@@ -495,7 +495,7 @@ function renderMap() {
         : '<span style="font-size:.72rem;color:var(--muted)">条件なし</span>';
 
     // ランキングの更新
-    const sorted = [...data].sort((a, b) => b.filtered - a.filtered).slice(0, 20);
+    const sorted = [...data].sort((a, b) => b.filtered - a.filtered).slice(0, 15);
     const maxR = sorted[0]?.filtered || 1;
     document.getElementById('rank-list').innerHTML = sorted.map((p, i) => {
         const ps = p.filtered >= 10000 ? `${(p.filtered / 10000).toFixed(0)}万` : p.filtered.toLocaleString();
