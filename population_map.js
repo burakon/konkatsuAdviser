@@ -122,7 +122,7 @@ function getAgeMaritalRatio(minAge, maxAge, sexFilter, maritalSet) {
 const RATIO_15PLUS = 0.858;
 
 // ── 学歴別比率（令和2年国勢調査 就業状態等基本集計 15歳以上）
-const EDU_R = { all:1, elementary:0.182, highschool:0.385, college:0.146, university:0.263 };
+const EDU_R = { all:1, elementary:0.182, highschool:0.794, college:0.409, university:0.263 };
 
 // ── 職業大分類別 就業者数と全国比率（令和2年国勢調査 就業状態等基本集計）
 const OCC_DATA = {
