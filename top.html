@@ -804,11 +804,6 @@
               </g>
             </svg>
             <div class="tip" id="tip"></div>
-            <!-- 編集モードのUI -->
-            <div style="position:absolute; bottom:15px; right:15px; z-index:9999; display:flex; gap:10px;">
-              <button id="btn-edit-mode" style="padding:5px 10px; cursor:pointer; background:white; border:1px solid #ccc; border-radius:4px; font-size:0.8rem;">✏️ 編集モード: OFF</button>
-              <button id="btn-export" style="padding:5px 10px; cursor:pointer; background:white; border:1px solid #ccc; border-radius:4px; font-size:0.8rem;">💾 座標をエクスポート</button>
-            </div>
           </div>
 
           <div class="map-panel">
@@ -824,7 +819,7 @@
             </div>
             <div class="divider"></div>
             <div>
-              <div class="sec-head">都道府県ランキング（上位20）</div>
+              <div class="sec-head">都道府県ランキング（上位15）</div>
               <div class="rank-list" id="rank-list"></div>
             </div>
             <div class="divider"></div>
@@ -845,7 +840,7 @@
 </div> <!-- closes app -->
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="population_map.js?v=22-rank-15"></script>
+  <script src="population_map.js?v=23-ui-cleanup"></script>
 </body>
 
 </html>
