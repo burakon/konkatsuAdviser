@@ -157,13 +157,11 @@ function globalRatio() {
     // 年齢
     r *= ageRatio(S.ageMin, S.ageMax);
 
-    // 配偶関係
-    if (S.marital.size > 0) {
-        const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-        const has_single = S.marital.has('single');
-        const under15_ratio = 1 - RATIO_15PLUS;
-        r *= marR * RATIO_15PLUS + (has_single ? under15_ratio : 0);
-    }
+    // 配偶関係 (既婚者は常に除外される)
+    const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
+    const has_single = S.marital.has('single');
+    const under15_ratio = 1 - RATIO_15PLUS;
+    r *= marR * RATIO_15PLUS + (has_single ? under15_ratio : 0);
 
     // 学歴（15歳以上）
     if (S.edu !== 'all') r *= EDU_R[S.edu];
@@ -201,13 +199,11 @@ function computePerPref() {
         // 年齢
         pop *= ageRatio(S.ageMin, S.ageMax);
 
-        // 配偶関係
-        if (S.marital.size > 0) {
-            const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-            const has_single = S.marital.has('single');
-            const under15_ratio = 1 - RATIO_15PLUS;
-            pop *= marR * RATIO_15PLUS + (has_single ? under15_ratio : 0);
-        }
+        // 配偶関係 (既婚者は常に除外される)
+        const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
+        const has_single = S.marital.has('single');
+        const under15_ratio = 1 - RATIO_15PLUS;
+        pop *= marR * RATIO_15PLUS + (has_single ? under15_ratio : 0);
 
         // 学歴
         if (S.edu !== 'all') pop *= EDU_R[S.edu];
@@ -226,11 +222,10 @@ function computePerPref() {
             // 他フィルターの比率を乗算
             if (S.sex !== 'all') pop *= SEX_R[S.sex];
             if (S.ageMin > 0 || S.ageMax < 100) pop *= ageRatio(S.ageMin, S.ageMax);
-            if (S.marital.size > 0) {
-                const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-                const has_single = S.marital.has('single');
-                pop *= marR * RATIO_15PLUS + (has_single ? (1 - RATIO_15PLUS) : 0);
-            }
+            // 配偶関係 (既婚者は常に除外される)
+            const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
+            const has_single = S.marital.has('single');
+            pop *= marR * RATIO_15PLUS + (has_single ? (1 - RATIO_15PLUS) : 0);
             if (S.edu !== 'all') pop *= EDU_R[S.edu];
         }
 
