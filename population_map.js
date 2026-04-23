@@ -158,8 +158,9 @@ function globalRatio() {
     r *= ageRatio(S.ageMin, S.ageMax);
 
     // 配偶関係 (既婚者は常に除外される)
-    const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-    const has_single = S.marital.has('single');
+    const activeMarital = S.marital.size > 0 ? [...S.marital] : ['single', 'bereaved', 'divorced'];
+    const marR = activeMarital.reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
+    const has_single = activeMarital.includes('single');
     const under15_ratio = 1 - RATIO_15PLUS;
     r *= marR * RATIO_15PLUS + (has_single ? under15_ratio : 0);
 
@@ -200,8 +201,9 @@ function computePerPref() {
         pop *= ageRatio(S.ageMin, S.ageMax);
 
         // 配偶関係 (既婚者は常に除外される)
-        const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-        const has_single = S.marital.has('single');
+        const activeMarital = S.marital.size > 0 ? [...S.marital] : ['single', 'bereaved', 'divorced'];
+        const marR = activeMarital.reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
+        const has_single = activeMarital.includes('single');
         const under15_ratio = 1 - RATIO_15PLUS;
         pop *= marR * RATIO_15PLUS + (has_single ? under15_ratio : 0);
 
@@ -223,8 +225,9 @@ function computePerPref() {
             if (S.sex !== 'all') pop *= SEX_R[S.sex];
             if (S.ageMin > 0 || S.ageMax < 100) pop *= ageRatio(S.ageMin, S.ageMax);
             // 配偶関係 (既婚者は常に除外される)
-            const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-            const has_single = S.marital.has('single');
+            const activeMarital = S.marital.size > 0 ? [...S.marital] : ['single', 'bereaved', 'divorced'];
+            const marR = activeMarital.reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
+            const has_single = activeMarital.includes('single');
             pop *= marR * RATIO_15PLUS + (has_single ? (1 - RATIO_15PLUS) : 0);
             if (S.edu !== 'all') pop *= EDU_R[S.edu];
         }
