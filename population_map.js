@@ -246,17 +246,8 @@ const S = {
 function globalRatio() {
     let r = 1;
 
-    // 性別
-    if (S.sex !== 'all') r *= SEX_R[S.sex];
-
-    // 年齢
-    r *= ageRatio(S.ageMin, S.ageMax);
-
-    // 配偶関係 (既婚者は常に除外される)
-    const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-    const has_single = S.marital.has('single');
-    const under15_ratio = 1 - RATIO_15PLUS;
-    r *= marR * RATIO_15PLUS + (has_single ? under15_ratio : 0);
+    // 性別・年齢・配偶関係（1歳刻みのクロス集計で一括計算）
+    r *= getAgeMaritalRatio(S.ageMin, S.ageMax, S.sex, S.marital);
 
     // 学歴（15歳以上）
     if (S.edu !== 'all') r *= EDU_R[S.edu];
@@ -288,17 +279,8 @@ function computePerPref() {
     return PREFS.map(p => {
         let pop = p.pop;
 
-        // 性別
-        if (S.sex !== 'all') pop *= SEX_R[S.sex];
-
-        // 年齢
-        pop *= ageRatio(S.ageMin, S.ageMax);
-
-        // 配偶関係 (既婚者は常に除外される)
-        const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-        const has_single = S.marital.has('single');
-        const under15_ratio = 1 - RATIO_15PLUS;
-        pop *= marR * RATIO_15PLUS + (has_single ? under15_ratio : 0);
+        // 性別・年齢・配偶関係（1歳刻みのクロス集計で一括計算）
+        pop *= getAgeMaritalRatio(S.ageMin, S.ageMax, S.sex, S.marital);
 
         // 学歴
         if (S.edu !== 'all') pop *= EDU_R[S.edu];
@@ -314,13 +296,12 @@ function computePerPref() {
             });
             pop = occPop;
             
-            // 他フィルターの比率を乗算
-            if (S.sex !== 'all') pop *= SEX_R[S.sex];
-            if (S.ageMin > 0 || S.ageMax < 100) pop *= ageRatio(S.ageMin, S.ageMax);
-            // 配偶関係 (既婚者は常に除外される)
-            const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-            const has_single = S.marital.has('single');
-            pop *= marR * RATIO_15PLUS + (has_single ? (1 - RATIO_15PLUS) : 0);
+            // 職業フィルターがある場合、その人口に対して「全人口に対する性別・年齢・配偶の通過率」の補正を近似的に掛ける
+            // 本来は職業別の年齢分布が必要ですが、ここでは全体の通過率を用いて調整します
+            const passRate = getAgeMaritalRatio(S.ageMin, S.ageMax, S.sex, S.marital);
+            // ※ occPop はすでに性別が混合された職業ベースの人口。
+            // ここでは簡易的に、全人口におけるターゲット条件の通過率を掛けることで近似します。
+            pop *= passRate;
             if (S.edu !== 'all') pop *= EDU_R[S.edu];
         }
 
