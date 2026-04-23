@@ -23,6 +23,101 @@ function ageRatio(lo,hi){return Math.max(0,(AGE_CUM[Math.min(hi,100)])-(lo>0?AGE
 
 // ── 配偶関係別人口比率（令和2年国勢調査 15歳以上人口）
 const MARITAL_OF_15PLUS = { single:0.275, married:0.570, bereaved:0.085, divorced:0.066 };
+
+// 年齢×配偶関係のクロス集計データ（代表年齢における各割合）
+// 1歳刻みで正確に補間するためのデータポイント
+const MARITAL_POINTS = {
+    male: [
+        { age: 17.5, single: 0.995, married: 0.005, bereaved: 0.000, divorced: 0.000 },
+        { age: 22.5, single: 0.940, married: 0.055, bereaved: 0.000, divorced: 0.005 },
+        { age: 27.5, single: 0.720, married: 0.260, bereaved: 0.000, divorced: 0.020 },
+        { age: 32.5, single: 0.470, married: 0.490, bereaved: 0.000, divorced: 0.040 },
+        { age: 37.5, single: 0.350, married: 0.590, bereaved: 0.001, divorced: 0.059 },
+        { age: 42.5, single: 0.290, married: 0.630, bereaved: 0.002, divorced: 0.078 },
+        { age: 47.5, single: 0.260, married: 0.640, bereaved: 0.003, divorced: 0.097 },
+        { age: 52.5, single: 0.220, married: 0.670, bereaved: 0.005, divorced: 0.105 },
+        { age: 57.5, single: 0.180, married: 0.710, bereaved: 0.010, divorced: 0.100 },
+        { age: 62.5, single: 0.130, married: 0.760, bereaved: 0.020, divorced: 0.090 },
+        { age: 67.5, single: 0.080, married: 0.810, bereaved: 0.040, divorced: 0.070 },
+        { age: 72.5, single: 0.050, married: 0.830, bereaved: 0.070, divorced: 0.050 },
+        { age: 77.5, single: 0.030, married: 0.820, bereaved: 0.120, divorced: 0.030 },
+        { age: 82.5, single: 0.020, married: 0.750, bereaved: 0.210, divorced: 0.020 },
+        { age: 87.5, single: 0.010, married: 0.610, bereaved: 0.360, divorced: 0.020 },
+        { age: 92.5, single: 0.010, married: 0.400, bereaved: 0.580, divorced: 0.010 },
+        { age: 97.5, single: 0.010, married: 0.200, bereaved: 0.780, divorced: 0.010 }
+    ],
+    female: [
+        { age: 17.5, single: 0.990, married: 0.010, bereaved: 0.000, divorced: 0.000 },
+        { age: 22.5, single: 0.890, married: 0.100, bereaved: 0.000, divorced: 0.010 },
+        { age: 27.5, single: 0.610, married: 0.360, bereaved: 0.000, divorced: 0.030 },
+        { age: 32.5, single: 0.350, married: 0.590, bereaved: 0.001, divorced: 0.059 },
+        { age: 37.5, single: 0.240, married: 0.670, bereaved: 0.002, divorced: 0.088 },
+        { age: 42.5, single: 0.190, married: 0.700, bereaved: 0.005, divorced: 0.105 },
+        { age: 47.5, single: 0.160, married: 0.710, bereaved: 0.010, divorced: 0.120 },
+        { age: 52.5, single: 0.120, married: 0.730, bereaved: 0.020, divorced: 0.130 },
+        { age: 57.5, single: 0.080, married: 0.750, bereaved: 0.040, divorced: 0.130 },
+        { age: 62.5, single: 0.050, married: 0.760, bereaved: 0.080, divorced: 0.110 },
+        { age: 67.5, single: 0.040, married: 0.720, bereaved: 0.160, divorced: 0.080 },
+        { age: 72.5, single: 0.030, married: 0.630, bereaved: 0.280, divorced: 0.060 },
+        { age: 77.5, single: 0.020, married: 0.490, bereaved: 0.450, divorced: 0.040 },
+        { age: 82.5, single: 0.020, married: 0.310, bereaved: 0.640, divorced: 0.030 },
+        { age: 87.5, single: 0.010, married: 0.150, bereaved: 0.820, divorced: 0.020 },
+        { age: 92.5, single: 0.010, married: 0.060, bereaved: 0.920, divorced: 0.010 },
+        { age: 97.5, single: 0.010, married: 0.020, bereaved: 0.960, divorced: 0.010 }
+    ]
+};
+
+// 任意の年齢に対する配偶関係の割合を線形補間して取得する関数
+function interpolateMarital(sex, age, status) {
+    const pts = MARITAL_POINTS[sex];
+    if (age <= pts[0].age) return pts[0][status] || 0;
+    if (age >= pts[pts.length - 1].age) return pts[pts.length - 1][status] || 0;
+    
+    for (let i = 0; i < pts.length - 1; i++) {
+        const p1 = pts[i];
+        const p2 = pts[i + 1];
+        if (age >= p1.age && age <= p2.age) {
+            const ratio = (age - p1.age) / (p2.age - p1.age);
+            return (p1[status] || 0) + ((p2[status] || 0) - (p1[status] || 0)) * ratio;
+        }
+    }
+    return 0;
+}
+
+// 1歳刻みで正確に「性別」「年齢」「配偶関係」のクロス集計比率を計算する関数
+function getAgeMaritalRatio(minAge, maxAge, sexFilter, maritalSet) {
+    let ratio = 0;
+    const sexes = sexFilter === 'all' ? ['male', 'female'] : [sexFilter];
+
+    for (let s of sexes) {
+        let sexRatio = 0;
+        const sexWeight = s === 'male' ? 0.487 : 0.513; 
+        
+        const start = Math.max(15, minAge);
+        const end = Math.min(100, maxAge);
+        
+        for (let a = start; a <= end; a++) {
+            // 対象年齢が含まれる5歳階級ブロックを見つけ、1歳あたりのベース人口割合を算出
+            let blockPop = 0;
+            for (let k in AGE_POPS) {
+                const [ba, bb] = k.split('-').map(Number);
+                if (a === 100 && ba === 100) { blockPop = AGE_POPS[k]; break; }
+                if (a >= ba && a <= bb) { blockPop = AGE_POPS[k] / 5; break; }
+            }
+            
+            // その年齢における配偶割合を補間して取得
+            let maritalWeight = 0;
+            for (let m of maritalSet) {
+                maritalWeight += interpolateMarital(s, a, m);
+            }
+            
+            sexRatio += blockPop * maritalWeight;
+        }
+        ratio += sexRatio * sexWeight;
+    }
+    return ratio;
+}
+
 const RATIO_15PLUS = 0.858;
 
 // ── 学歴別比率（令和2年国勢調査 就業状態等基本集計 15歳以上）
