@@ -84,8 +84,8 @@ function interpolateMarital(sex, age, status) {
     return 0;
 }
 
-// 1歳刻みで正確に「性別」「年齢」「配偶関係」のクロス集計比率を計算する関数
-function getAgeMaritalRatio(minAge, maxAge, sexFilter, maritalSet) {
+// 性別・年齢・配偶関係・年収を統合して1歳刻みで計算する関数
+function getDemographicRatio(minAge, maxAge, sexFilter, maritalSet, incomeMin, incomeMax, isIncomeSelected, isEmployedOnly) {
     let ratio = 0;
     const sexes = sexFilter === 'all' ? ['male', 'female'] : [sexFilter];
 
@@ -106,13 +106,22 @@ function getAgeMaritalRatio(minAge, maxAge, sexFilter, maritalSet) {
                 }
             }
             
-            // その年齢における配偶割合を補間して取得
+            // 配偶関係割合
             let maritalWeight = 0;
             for (let m of maritalSet) {
                 maritalWeight += interpolateMarital(s, a, m);
             }
             
-            sexRatio += blockPop * maritalWeight;
+            // 年収割合（年齢との相関を適用。有業者内での分布）
+            let incomeWeight = 1.0;
+            if (isIncomeSelected) {
+                incomeWeight = interpolateIncome(a, incomeMin, incomeMax);
+            }
+            
+            // 有業者率の適用（職業または年収が選択されている場合）
+            const empWeight = isEmployedOnly ? EMPLOYMENT_RATE : 1.0;
+            
+            sexRatio += blockPop * maritalWeight * incomeWeight * empWeight;
         }
         ratio += sexRatio * sexWeight;
     }
@@ -141,29 +150,48 @@ const OCC_DATA = {
 const OCC_TOTAL_EMPLOYED = 65468000;
 const EMPLOYMENT_RATE = OCC_TOTAL_EMPLOYED / TOTAL;
 
-// ── 年収別比率（令和4年就業構造基本調査 表04000 有業者ベース）
-const INCOME_BRACKETS = [
-  { min: 0, max: 50, r: 0.076 },
-  { min: 50, max: 100, r: 0.083 },
-  { min: 100, max: 200, r: 0.156 },
-  { min: 200, max: 300, r: 0.137 },
-  { min: 300, max: 400, r: 0.129 },
-  { min: 400, max: 500, r: 0.105 },
-  { min: 500, max: 700, r: 0.144 },
-  { min: 700, max: 1000, r: 0.093 },
-  { min: 1000, max: 99999, r: 0.077 }
+// ── 年収別比率（令和4年就業構造基本調査 表04000 有業者ベース、年齢別分布）
+const INCOME_POINTS = [
+  {a:17, r:[0.3703,0.3795,0.1077,0.1205,0.0189,0.0024,0.0005,0.0002,0.0001]},
+  {a:22, r:[0.0965,0.173,0.1469,0.3479,0.1761,0.0454,0.0123,0.0015,0.0005]},
+  {a:27, r:[0.0213,0.0368,0.1119,0.2696,0.2762,0.1798,0.0887,0.0125,0.0031]},
+  {a:32, r:[0.0246,0.0518,0.1198,0.1946,0.202,0.174,0.1769,0.0429,0.0134]},
+  {a:37, r:[0.0306,0.0671,0.1272,0.1721,0.1602,0.1485,0.1892,0.0774,0.0277]},
+  {a:42, r:[0.0296,0.0824,0.1322,0.1497,0.1415,0.135,0.1842,0.1033,0.0421]},
+  {a:47, r:[0.0288,0.0833,0.139,0.1416,0.1309,0.1198,0.1783,0.1242,0.0541]},
+  {a:52, r:[0.0296,0.087,0.1448,0.1454,0.1175,0.104,0.1621,0.1393,0.0703]},
+  {a:57, r:[0.0346,0.0856,0.1494,0.1443,0.1133,0.0929,0.1484,0.1515,0.0801]},
+  {a:62, r:[0.046,0.1104,0.2002,0.2137,0.1498,0.093,0.0844,0.0562,0.0464]},
+  {a:67, r:[0.0952,0.1825,0.2844,0.1884,0.0954,0.0505,0.0436,0.0267,0.0334]},
+  {a:72, r:[0.1476,0.2315,0.2924,0.1464,0.0676,0.0358,0.0315,0.0187,0.0286]},
+  {a:77, r:[0.1993,0.2425,0.2622,0.115,0.0653,0.0286,0.0328,0.0225,0.0316]},
+  {a:82, r:[0.2361,0.2263,0.213,0.1174,0.0627,0.0348,0.043,0.0277,0.039]},
+  {a:87, r:[0.2424,0.1853,0.1998,0.0861,0.076,0.0464,0.0634,0.0319,0.0687]}
 ];
 
-function incomeRatio(minV, maxV) {
-  let r = 0;
-  INCOME_BRACKETS.forEach(b => {
-    const overlapMin = Math.max(minV, b.min);
-    const overlapMax = Math.min(maxV === 1000 ? 99999 : maxV, b.max);
-    if (overlapMin < overlapMax) {
-      r += b.r * ((overlapMax - overlapMin) / (b.max - b.min));
+function interpolateIncome(age, minInc, maxInc) {
+    let dist = [];
+    if (age <= INCOME_POINTS[0].a) dist = INCOME_POINTS[0].r;
+    else if (age >= INCOME_POINTS[INCOME_POINTS.length - 1].a) dist = INCOME_POINTS[INCOME_POINTS.length - 1].r;
+    else {
+        for (let i = 0; i < INCOME_POINTS.length - 1; i++) {
+            const p1 = INCOME_POINTS[i], p2 = INCOME_POINTS[i + 1];
+            if (age >= p1.a && age <= p2.a) {
+                const ratio = (age - p1.a) / (p2.a - p1.a);
+                dist = p1.r.map((v, idx) => v + (p2.r[idx] - v) * ratio);
+                break;
+            }
+        }
     }
-  });
-  return r;
+    const bounds = [0, 50, 100, 200, 300, 400, 500, 700, 1000, 99999];
+    let totalRatio = 0;
+    for (let i = 0; i < dist.length; i++) {
+        const bMin = bounds[i], bMax = bounds[i+1];
+        if (bMax > minInc && bMin < (maxInc === 1000 ? 99999 : maxInc)) {
+            totalRatio += dist[i];
+        }
+    }
+    return totalRatio;
 }
 
 // ── 都道府県別人口（令和2年国勢調査）+ 職業別就業者構成比（都道府県別）
@@ -245,71 +273,47 @@ const S = {
 // ══════════════════════════════════════════════════
 
 function globalRatio() {
-    let r = 1;
+    const incSelected = S.incomeMin > 0 || S.incomeMax < 1000;
+    const occSelected = S.occ.size > 0;
+    const isEmployedOnly = incSelected || occSelected;
 
-    // 性別・年齢・配偶関係（1歳刻みのクロス集計で一括計算）
-    r *= getAgeMaritalRatio(S.ageMin, S.ageMax, S.sex, S.marital);
+    let r = getDemographicRatio(S.ageMin, S.ageMax, S.sex, S.marital, S.incomeMin, S.incomeMax, incSelected, isEmployedOnly);
 
-    // 学歴（15歳以上）
     if (S.edu !== 'all') r *= EDU_R[S.edu];
 
-    // 職業（就業者に対する比率、複数OR）
-    if (S.occ.size > 0) {
-        const occR = [...S.occ].reduce((s, k) => s + (OCC_DATA[k].r || 0), 0);
-        r *= EMPLOYMENT_RATE * occR;
+    if (occSelected) {
+        let occR = 0;
+        S.occ.forEach(k => occR += OCC_DATA[k].r);
+        r = r * occR; 
     }
-
-    // 年収（有業者ベース。就業者 ≈ 有業者として近似）
-    if (S.incomeMin > 0 || S.incomeMax < 1000) {
-        const incR = incomeRatio(S.incomeMin, S.incomeMax);
-        if (S.occ.size === 0) {
-            r *= EMPLOYMENT_RATE * incR;
-        } else {
-            r *= incR;
-        }
-    }
-
-    return Math.min(Math.max(r, 0), 1);
+    return r;
 }
 
 // 都道府県ごとの推計人口
 function computePerPref() {
-    const occSelected = S.occ.size > 0;
     const incSelected = S.incomeMin > 0 || S.incomeMax < 1000;
+    const occSelected = S.occ.size > 0;
+    const isEmployedOnly = incSelected || occSelected;
+    const demoRate = getDemographicRatio(S.ageMin, S.ageMax, S.sex, S.marital, S.incomeMin, S.incomeMax, incSelected, isEmployedOnly);
 
     return PREFS.map(p => {
-        let pop = p.pop;
-
-        // 性別・年齢・配偶関係（1歳刻みのクロス集計で一括計算）
-        pop *= getAgeMaritalRatio(S.ageMin, S.ageMax, S.sex, S.marital);
+        let pop = p.pop * demoRate;
 
         // 学歴
         if (S.edu !== 'all') pop *= EDU_R[S.edu];
 
         // 職業（都道府県別構成比を使用）
         if (occSelected) {
-            const prefEmpPop = p.pop * EMPLOYMENT_RATE;
+            // demoRateにはすでに EMPLOYMENT_RATE が含まれているため、
+            // ここでは職業の全国シェアと都道府県偏差のみを考慮する
             let occPop = 0;
             S.occ.forEach(k => {
                 const nationalShare = OCC_DATA[k].r;
                 const deviance = p.occ[k] || 1.0;
-                occPop += prefEmpPop * nationalShare * deviance;
+                occPop += (p.pop * demoRate) * nationalShare * deviance;
             });
             pop = occPop;
-            
-            // 職業フィルターがある場合、その人口に対して「全人口に対する性別・年齢・配偶の通過率」の補正を近似的に掛ける
-            // 本来は職業別の年齢分布が必要ですが、ここでは全体の通過率を用いて調整します
-            const passRate = getAgeMaritalRatio(S.ageMin, S.ageMax, S.sex, S.marital);
-            // ※ occPop はすでに性別が混合された職業ベースの人口。
-            // ここでは簡易的に、全人口におけるターゲット条件の通過率を掛けることで近似します。
-            pop *= passRate;
             if (S.edu !== 'all') pop *= EDU_R[S.edu];
-        }
-
-        // 年収
-        if (incSelected) {
-            if (!occSelected) pop *= EMPLOYMENT_RATE;
-            pop *= incomeRatio(S.incomeMin, S.incomeMax);
         }
 
         return { ...p, filtered: Math.max(0, Math.round(pop)) };
