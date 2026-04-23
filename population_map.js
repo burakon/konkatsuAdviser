@@ -158,9 +158,8 @@ function globalRatio() {
     r *= ageRatio(S.ageMin, S.ageMax);
 
     // 配偶関係 (既婚者は常に除外される)
-    const activeMarital = S.marital.size > 0 ? [...S.marital] : ['single', 'bereaved', 'divorced'];
-    const marR = activeMarital.reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-    const has_single = activeMarital.includes('single');
+    const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
+    const has_single = S.marital.has('single');
     const under15_ratio = 1 - RATIO_15PLUS;
     r *= marR * RATIO_15PLUS + (has_single ? under15_ratio : 0);
 
@@ -201,9 +200,8 @@ function computePerPref() {
         pop *= ageRatio(S.ageMin, S.ageMax);
 
         // 配偶関係 (既婚者は常に除外される)
-        const activeMarital = S.marital.size > 0 ? [...S.marital] : ['single', 'bereaved', 'divorced'];
-        const marR = activeMarital.reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-        const has_single = activeMarital.includes('single');
+        const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
+        const has_single = S.marital.has('single');
         const under15_ratio = 1 - RATIO_15PLUS;
         pop *= marR * RATIO_15PLUS + (has_single ? under15_ratio : 0);
 
@@ -225,9 +223,8 @@ function computePerPref() {
             if (S.sex !== 'all') pop *= SEX_R[S.sex];
             if (S.ageMin > 0 || S.ageMax < 100) pop *= ageRatio(S.ageMin, S.ageMax);
             // 配偶関係 (既婚者は常に除外される)
-            const activeMarital = S.marital.size > 0 ? [...S.marital] : ['single', 'bereaved', 'divorced'];
-            const marR = activeMarital.reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
-            const has_single = activeMarital.includes('single');
+            const marR = [...S.marital].reduce((s, k) => s + (MARITAL_OF_15PLUS[k] || 0), 0);
+            const has_single = S.marital.has('single');
             pop *= marR * RATIO_15PLUS + (has_single ? (1 - RATIO_15PLUS) : 0);
             if (S.edu !== 'all') pop *= EDU_R[S.edu];
         }
@@ -485,12 +482,14 @@ function setupMultiTog(gid, stateSet, chipId, labelMap, cardId) {
     document.getElementById(gid).querySelectorAll('.tog').forEach(btn => {
         btn.addEventListener('click', () => {
             const v = btn.dataset.v;
-            if (stateSet.has(v)) { stateSet.delete(v); btn.classList.remove('on'); }
+            if (stateSet.has(v)) { 
+                if (stateSet.size <= 1) return; // 最低1つは必ず選択させる
+                stateSet.delete(v); btn.classList.remove('on'); 
+            }
             else { stateSet.add(v); btn.classList.add('on'); }
             const sz = stateSet.size;
-            document.getElementById(chipId).textContent =
-                sz === 0 ? '指定なし' : sz === 1 ? labelMap[[...stateSet][0]] : `${sz}項目選択`;
-            document.getElementById(cardId).classList.toggle('active', sz > 0);
+            document.getElementById(chipId).textContent = sz === 1 ? labelMap[[...stateSet][0]] : `${sz}項目選択`;
+            document.getElementById(cardId).classList.toggle('active', true);
             updateBadge();
         });
     });
