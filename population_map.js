@@ -97,12 +97,13 @@ function getAgeMaritalRatio(minAge, maxAge, sexFilter, maritalSet) {
         const end = Math.min(100, maxAge);
         
         for (let a = start; a <= end; a++) {
-            // 対象年齢が含まれる5歳階級ブロックを見つけ、1歳あたりのベース人口割合を算出
             let blockPop = 0;
-            for (let k in AGE_POPS) {
-                const [ba, bb] = k.split('-').map(Number);
-                if (a === 100 && ba === 100) { blockPop = AGE_POPS[k]; break; }
-                if (a >= ba && a <= bb) { blockPop = AGE_POPS[k] / 5; break; }
+            for (let i = 0; i < AGE_BRACKETS.length; i++) {
+                const [ba, bb] = AGE_BRACKETS[i];
+                if (a >= ba && a <= bb) {
+                    blockPop = (AGE_POPS[i] / AGE_TOTAL) / (bb - ba + 1);
+                    break;
+                }
             }
             
             // その年齢における配偶割合を補間して取得
