@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>人口分布マップ</title>
+  <title>結婚したい？お前その条件のやつが何人いると思ってんだよ</title>
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐳</text></svg>">
 
@@ -59,11 +59,12 @@
     }
 
     .logo {
-      font-family: 'DM Mono', monospace;
-      font-size: .92rem;
-      font-weight: 500;
-      letter-spacing: -.02em;
-      white-space: nowrap;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      color: var(--accent);
     }
 
     .logo span {
@@ -621,7 +622,7 @@
 
     <!-- TOPBAR -->
     <div class="topbar">
-      <div class="logo">人口<span>.</span>Map</div>
+      <div class="logo">結婚したい？お前その条件のやつが何人いると思ってんだよ</div>
       <div class="tab-row">
         <button class="tab-btn active" id="tab-filter" onclick="showPage('filter')">① 条件設定</button>
         <button class="tab-btn" id="tab-map" onclick="showPage('map')">② 地図で見る</button>
@@ -633,7 +634,7 @@
     <div class="split-layout">
       <div class="split-left">
         <div id="page-filter">
-      <p class="page-hint">条件を絞り込んで、日本のどこに何人いるか確認しましょう</p>
+      <p class="page-hint">条件を絞り込んで、日本のどこに何人いるか確認して己の傲慢さを見直そう</p>
 
       <!-- 性別 -->
       <div class="fc" id="fc-sex">
@@ -763,7 +764,7 @@
             <div class="ficon">💴</div>
             <div>
               <div class="fname">年収</div>
-              <div class="fsrc">令和4年 就業構造基本調査 表04000（有業者のみ）</div>
+              <div class="fsrc">令和4年 就業構造基本調査 表04000</div>
             </div>
           </div>
           <div class="fchip" id="chip-income">指定なし</div>
@@ -840,7 +841,7 @@
 </div> <!-- closes app -->
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="population_map.js?v=26-fix-sex-init"></script>
+  <script src="population_map.js?v=30-arrogance-fix"></script>
 </body>
 
 </html>
