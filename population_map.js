@@ -518,7 +518,7 @@ function renderMap() {
 function showTip(e, name, pop, total) {
     const t = document.getElementById('tip');
     const ps = pop >= 10000 ? `約${(pop / 10000).toFixed(1)}万人` : pop.toLocaleString() + '人';
-    t.innerHTML = `<strong>${name}</strong>${ps}　(${(pop / total * 100).toFixed(1)}%)`;
+    t.innerHTML = `<strong>${name}</strong>${ps}　(国内${(pop / total * 100).toFixed(1)}%)`;
     t.classList.add('show'); moveTip(e);
 }
 function hideTip() { document.getElementById('tip').classList.remove('show'); }
