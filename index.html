@@ -8,22 +8,22 @@
 
   <!-- OGP Settings -->
   <meta property="og:title" content="婚活高望みチェック">
-  <meta property="og:description" content="国勢調査などの公的統計から、あなたの「婚活条件」に合う人が日本に何人いるかをリアルタイムに推計します。">
+  <meta property="og:description" content="結婚相手に求める条件を選び全国に何人いるか調べましょう">
   <meta property="og:image" content="https://burakon.github.io/konkatsuAdviser/ogp.png">
   <meta property="og:url" content="https://burakon.github.io/konkatsuAdviser/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="婚活高望みチェック">
-  
+
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="婚活高望みチェック">
-  <meta name="twitter:description" content="国勢調査から導き出される、婚活の厳しい現実。">
+  <meta name="twitter:description" content="結婚相手に求める条件を選び全国に何人いるか調べましょう">
   <meta name="twitter:image" content="https://burakon.github.io/konkatsuAdviser/ogp.png">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CH43929M39"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-CH43929M39');
   </script>
@@ -93,7 +93,9 @@
       color: var(--accent);
     }
 
-    .tab-row { display: none; }
+    .tab-row {
+      display: none;
+    }
 
     .tab-btn {
       padding: 6px 14px;
@@ -127,13 +129,13 @@
       transition: all .3s;
     }
 
-    
+
     .split-layout {
       display: flex;
       flex: 1;
       min-height: 0;
     }
-    
+
     .split-left {
       flex: 1;
       width: 50%;
@@ -141,7 +143,7 @@
       background: var(--bg);
       border-right: 1px solid var(--border);
     }
-    
+
     .split-right {
       flex: 1;
       width: 50%;
@@ -155,10 +157,13 @@
         flex-direction: column;
         overflow-y: auto;
       }
-      .split-left, .split-right {
+
+      .split-left,
+      .split-right {
         width: 100%;
         overflow-y: visible;
       }
+
       .split-right {
         border-right: none;
         border-top: 1px solid var(--border);
@@ -166,9 +171,9 @@
     }
 
     /* PAGES */
-    
 
-    
+
+
 
     /* ── FILTER PAGE ── */
     #page-filter {
@@ -363,7 +368,9 @@
     }
 
     /* CTA */
-    .cta-bar { display: none; }
+    .cta-bar {
+      display: none;
+    }
 
     .cta-btn {
       background: var(--accent);
@@ -656,99 +663,100 @@
     <div class="split-layout">
       <div class="split-left">
         <div id="page-filter">
-      <p class="page-hint">条件を絞り込んで、日本のどこに何人いるか確認して己の傲慢さを見直そう</p>
+          <p class="page-hint">条件を絞り込んで、日本のどこに何人いるか確認して己の傲慢さを見直そう</p>
 
-      <!-- 性別 -->
-      <div class="fc" id="fc-sex">
-        <div class="fc-head">
-          <div class="fc-hl">
-            <div class="ficon">⚧</div>
-            <div>
-              <div class="fname">性別</div>
-              <div class="fsrc">令和5年人口推計 および 令和2年国勢調査 人口等基本集計</div>
-            </div>
-          </div>
-          <div class="fchip" id="chip-sex">男性</div>
-        </div>
-        <div class="fc-body">
-          <div class="tog-row" id="tg-sex">
-            <!--<button class="tog on" data-v="all">指定なし</button>-->
-            <button class="tog on" data-v="male">男性</button>
-            <button class="tog" data-v="female">女性</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 年齢 -->
-      <div class="fc" id="fc-age">
-        <div class="fc-head">
-          <div class="fc-hl">
-            <div class="ficon">🎂</div>
-            <div>
-              <div class="fname">年齢</div>
-              <div class="fsrc">令和5年人口推計 および 令和2年国勢調査 人口等基本集計（5歳階級別）</div>
-            </div>
-          </div>
-          <div class="fchip" id="chip-age">20〜60歳</div>
-        </div>
-        <div class="fc-body">
-          <div class="range-wrap">
-            <div class="r-track"></div>
-            <div class="r-fill" id="age-fill"></div>
-            <input type="range" id="age-lo" min="20" max="60" value="20">
-            <input type="range" id="age-hi" min="20" max="60" value="60">
-          </div>
-          <div class="range-lbl"><span>20歳</span><span id="age-mid">20〜60歳</span><span>60歳</span></div>
-        </div>
-      </div>
-
-      <!-- 婚姻（複数選択） -->
-      <div class="fc" id="fc-marital">
-        <div class="fc-head">
-          <div class="fc-hl">
-            <div class="ficon">💍</div>
-            <div>
-              <div class="fname">配偶関係 <span style="font-size:.65rem;color:var(--accent2);font-weight:400;">複数可</span>
+          <!-- 性別 -->
+          <div class="fc" id="fc-sex">
+            <div class="fc-head">
+              <div class="fc-hl">
+                <div class="ficon">⚧</div>
+                <div>
+                  <div class="fname">性別</div>
+                  <div class="fsrc">令和5年人口推計 および 令和2年国勢調査 人口等基本集計</div>
+                </div>
               </div>
-              <div class="fsrc">令和5年人口推計 および 令和2年国勢調査 人口等基本集計（15歳以上）</div>
+              <div class="fchip" id="chip-sex">男性</div>
+            </div>
+            <div class="fc-body">
+              <div class="tog-row" id="tg-sex">
+                <!--<button class="tog on" data-v="all">指定なし</button>-->
+                <button class="tog on" data-v="male">男性</button>
+                <button class="tog" data-v="female">女性</button>
+              </div>
             </div>
           </div>
-          <div class="fchip" id="chip-marital">未婚</div>
-        </div>
-        <div class="fc-body">
-          <div class="tog-row" id="tg-marital">
-            <button class="tog multi on" data-v="single">未婚</button>
-            <!--<button class="tog multi" data-v="married">有配偶</button>-->
-            <button class="tog multi" data-v="bereaved">死別</button>
-            <button class="tog multi" data-v="divorced">離別</button>
-          </div>
-        </div>
-      </div>
 
-      <!-- 学歴 -->
-      <div class="fc" id="fc-edu">
-        <div class="fc-head">
-          <div class="fc-hl">
-            <div class="ficon">🎓</div>
-            <div>
-              <div class="fname">最終学歴</div>
-              <div class="fsrc">令和5年人口推計 および 令和2年国勢調査 就業状態等基本集計（15歳以上）</div>
+          <!-- 年齢 -->
+          <div class="fc" id="fc-age">
+            <div class="fc-head">
+              <div class="fc-hl">
+                <div class="ficon">🎂</div>
+                <div>
+                  <div class="fname">年齢</div>
+                  <div class="fsrc">令和5年人口推計 および 令和2年国勢調査 人口等基本集計（5歳階級別）</div>
+                </div>
+              </div>
+              <div class="fchip" id="chip-age">20〜60歳</div>
+            </div>
+            <div class="fc-body">
+              <div class="range-wrap">
+                <div class="r-track"></div>
+                <div class="r-fill" id="age-fill"></div>
+                <input type="range" id="age-lo" min="20" max="60" value="20">
+                <input type="range" id="age-hi" min="20" max="60" value="60">
+              </div>
+              <div class="range-lbl"><span>20歳</span><span id="age-mid">20〜60歳</span><span>60歳</span></div>
             </div>
           </div>
-          <div class="fchip" id="chip-edu">指定なし</div>
-        </div>
-        <div class="fc-body">
-          <div class="tog-row" id="tg-edu">
-            <button class="tog on" data-v="all">指定なし</button>
-            <!--<button class="tog" data-v="elementary">中学以上</button>-->
-            <button class="tog" data-v="highschool">高卒以上</button>
-            <button class="tog" data-v="college">短大高専専門卒以上</button>
-            <button class="tog" data-v="university">大学卒以上</button>
-          </div>
-        </div>
-      </div>
 
-      <!-- 職業（複数選択） 
+          <!-- 婚姻（複数選択） -->
+          <div class="fc" id="fc-marital">
+            <div class="fc-head">
+              <div class="fc-hl">
+                <div class="ficon">💍</div>
+                <div>
+                  <div class="fname">配偶関係 <span
+                      style="font-size:.65rem;color:var(--accent2);font-weight:400;">複数可</span>
+                  </div>
+                  <div class="fsrc">令和5年人口推計 および 令和2年国勢調査 人口等基本集計（15歳以上）</div>
+                </div>
+              </div>
+              <div class="fchip" id="chip-marital">未婚</div>
+            </div>
+            <div class="fc-body">
+              <div class="tog-row" id="tg-marital">
+                <button class="tog multi on" data-v="single">未婚</button>
+                <!--<button class="tog multi" data-v="married">有配偶</button>-->
+                <button class="tog multi" data-v="bereaved">死別</button>
+                <button class="tog multi" data-v="divorced">離別</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 学歴 -->
+          <div class="fc" id="fc-edu">
+            <div class="fc-head">
+              <div class="fc-hl">
+                <div class="ficon">🎓</div>
+                <div>
+                  <div class="fname">最終学歴</div>
+                  <div class="fsrc">令和5年人口推計 および 令和2年国勢調査 就業状態等基本集計（15歳以上）</div>
+                </div>
+              </div>
+              <div class="fchip" id="chip-edu">指定なし</div>
+            </div>
+            <div class="fc-body">
+              <div class="tog-row" id="tg-edu">
+                <button class="tog on" data-v="all">指定なし</button>
+                <!--<button class="tog" data-v="elementary">中学以上</button>-->
+                <button class="tog" data-v="highschool">高卒以上</button>
+                <button class="tog" data-v="college">短大高専専門卒以上</button>
+                <button class="tog" data-v="university">大学卒以上</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 職業（複数選択） 
       <div class="fc" id="fc-occ">
         <div class="fc-head">
           <div class="fc-hl">
@@ -779,91 +787,91 @@
       </div>
       -->
 
-      <!-- 年収（令和4年就業構造基本調査） -->
-      <div class="fc" id="fc-income">
-        <div class="fc-head">
-          <div class="fc-hl">
-            <div class="ficon">💴</div>
-            <div>
-              <div class="fname">年収</div>
-              <div class="fsrc">令和4年 就業構造基本調査 表04000</div>
+          <!-- 年収（令和4年就業構造基本調査） -->
+          <div class="fc" id="fc-income">
+            <div class="fc-head">
+              <div class="fc-hl">
+                <div class="ficon">💴</div>
+                <div>
+                  <div class="fname">年収</div>
+                  <div class="fsrc">令和4年 就業構造基本調査 表04000</div>
+                </div>
+              </div>
+              <div class="fchip" id="chip-income">指定なし</div>
+            </div>
+            <div class="fc-body">
+              <div class="range-wrap">
+                <div class="r-track"></div>
+                <div class="r-fill" id="income-fill"></div>
+                <input type="range" id="income-lo" min="0" max="1000" step="50" value="0">
+                <input type="range" id="income-hi" min="0" max="1000" step="50" value="1000">
+              </div>
+              <div class="range-lbl"><span>0万円</span><span id="income-mid">0〜1000万円以上</span><span>1000万円以上</span></div>
             </div>
           </div>
-          <div class="fchip" id="chip-income">指定なし</div>
-        </div>
-        <div class="fc-body">
-          <div class="range-wrap">
-            <div class="r-track"></div>
-            <div class="r-fill" id="income-fill"></div>
-            <input type="range" id="income-lo" min="0" max="1000" step="50" value="0">
-            <input type="range" id="income-hi" min="0" max="1000" step="50" value="1000">
+
+          <div class="data-note">
+            出典：総務省統計局「令和5年人口推計 および 令和2年国勢調査」および「令和4年就業構造基本調査」<br>
+            （政府統計の総合窓口 e-Stat）を基に独自に加工・推計<br>
+
           </div>
-          <div class="range-lbl"><span>0万円</span><span id="income-mid">0〜1000万円以上</span><span>1000万円以上</span></div>
+
+          <!-- cta-bar removed -->
+        </div>
+      </div> <!-- closes split-left -->
+
+      <!-- ════════ MAP PAGE ════════ -->
+      <div class="split-right">
+        <div id="page-map">
+          <div style="display:flex;flex-direction:column;flex:1;">
+            <div class="pills-bar" id="pills-bar"><span class="pill-none">条件なし（全人口）</span></div>
+            <div class="map-body" style="flex:1;">
+
+              <div class="map-area" id="map-area">
+                <svg id="jsvg" viewBox="0 0 500 600" preserveAspectRatio="xMidYMid meet">
+                  <g id="zoom-group">
+                    <g id="land-layer"></g>
+                    <g id="bubble-layer"></g>
+                  </g>
+                </svg>
+                <div class="tip" id="tip"></div>
+              </div>
+
+              <div class="map-panel">
+                <div>
+                  <div class="sec-head">全国合計（推計）</div>
+                  <div class="panel-num" id="panel-num">0</div>
+                  <div class="panel-pct">全人口の <strong id="panel-pct">100.0</strong>%</div>
+                </div>
+                <div class="divider"></div>
+                <div>
+                  <div class="sec-head">適用条件</div>
+                  <div id="fs-list" style="display:flex;flex-direction:column;gap:5px;"></div>
+                </div>
+                <div class="divider"></div>
+                <div>
+                  <div class="sec-head">都道府県ランキング（上位15）</div>
+                  <div class="rank-list" id="rank-list"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="caveat">
+                  ※都道府県分布は常住地ベース。<br>
+                  ※複数条件の乗算による推計値。<br>
+                  ※職業フィルター適用時は都道府県別<br>　職業構成比データを使用。
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="data-note">
-        出典：総務省統計局「令和5年人口推計 および 令和2年国勢調査」および「令和4年就業構造基本調査」<br>
-        （政府統計の総合窓口 e-Stat）を基に独自に加工・推計<br>
-
-      </div>
-
-      <!-- cta-bar removed -->
-    </div>
-    </div> <!-- closes split-left -->
-
-    <!-- ════════ MAP PAGE ════════ -->
-    <div class="split-right">
-      <div id="page-map">
-      <div style="display:flex;flex-direction:column;flex:1;">
-        <div class="pills-bar" id="pills-bar"><span class="pill-none">条件なし（全人口）</span></div>
-        <div class="map-body" style="flex:1;">
-
-          <div class="map-area" id="map-area">
-            <svg id="jsvg" viewBox="0 0 500 600" preserveAspectRatio="xMidYMid meet">
-              <g id="zoom-group">
-                <g id="land-layer"></g>
-                <g id="bubble-layer"></g>
-              </g>
-            </svg>
-            <div class="tip" id="tip"></div>
-          </div>
-
-          <div class="map-panel">
-            <div>
-              <div class="sec-head">全国合計（推計）</div>
-              <div class="panel-num" id="panel-num">0</div>
-              <div class="panel-pct">全人口の <strong id="panel-pct">100.0</strong>%</div>
-            </div>
-            <div class="divider"></div>
-            <div>
-              <div class="sec-head">適用条件</div>
-              <div id="fs-list" style="display:flex;flex-direction:column;gap:5px;"></div>
-            </div>
-            <div class="divider"></div>
-            <div>
-              <div class="sec-head">都道府県ランキング（上位15）</div>
-              <div class="rank-list" id="rank-list"></div>
-            </div>
-            <div class="divider"></div>
-            <div class="caveat">
-              ※都道府県分布は常住地ベース。<br>
-              ※複数条件の乗算による推計値。<br>
-              ※職業フィルター適用時は都道府県別<br>　職業構成比データを使用。
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-      </div> <!-- closes page-map -->
-    </div> <!-- closes split-right -->
+    </div> <!-- closes page-map -->
+  </div> <!-- closes split-right -->
   </div> <!-- closes split-layout -->
-</div> <!-- closes app -->
+  </div> <!-- closes app -->
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="population_map.js?v=35-new-shorter-name"></script>
+  <script src="population_map.js?v=36-desc-updated"></script>
 </body>
 
 </html>
